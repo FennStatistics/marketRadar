@@ -1,1 +1,1 @@
-# marketRadar
+# Visualization of Market Radar

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharma Packaging Market Radar — Workflow v2.0</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f1f5f9;
+    padding: 40px 24px 64px;
+    color: #0f172a;
+  }
+
+  .page { max-width: 1080px; margin: 0 auto; }
+
+  /* HEADER */
+  .hdr { text-align: center; margin-bottom: 48px; }
+  .hdr-pill {
+    display: inline-block;
+    font-size: 10px; font-weight: 800; letter-spacing: 2.5px;
+    text-transform: uppercase; color: #1d4ed8;
+    background: #dbeafe; padding: 4px 14px;
+    border-radius: 999px; margin-bottom: 14px;
+  }
+  .hdr h1 {
+    font-size: 27px; font-weight: 800; color: #0f172a;
+    margin-bottom: 10px; letter-spacing: -0.5px;
+  }
+  .hdr p { font-size: 13.5px; color: #64748b; max-width: 640px; margin: 0 auto; line-height: 1.65; }
+
+  /* PHASE CARD */
+  .phase {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(15,23,42,.07);
+    padding: 18px 20px;
+    margin-bottom: 4px;
+    border-left: 4px solid;
+  }
+  .phase.c-blue   { border-color: #3b82f6; }
+  .phase.c-violet { border-color: #8b5cf6; }
+  .phase.c-orange { border-color: #f97316; }
+  .phase.c-sky    { border-color: #0ea5e9; }
+  .phase.c-indigo { border-color: #6366f1; }
+  .phase.c-amber  { border-color: #f59e0b; background: #fffbeb; }
+  .phase.c-pink   { border-color: #ec4899; }
+  .phase.c-slate  { border-color: #94a3b8; border-style: dashed; }
+
+  .ph { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .pn {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; flex-shrink: 0;
+  }
+  .pt { font-size: 12px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; flex: 1; }
+
+  .bdg { font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  .b-new { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+  .b-exp { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+  .b-mov { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+
+  .nrow { display: flex; gap: 9px; flex-wrap: wrap; }
+
+  .nd {
+    padding: 9px 13px; border-radius: 8px;
+    font-size: 12px; min-width: 130px;
+    text-align: center; border: 1.5px solid;
+    flex: 1; max-width: 200px;
+  }
+  .ni { font-size: 17px; display: block; margin-bottom: 3px; }
+  .nl { font-weight: 600; display: block; font-size: 12px; }
+  .ns { font-size: 10.5px; opacity: .78; display: block; margin-top: 2px; line-height: 1.3; }
+
+  .k-blue   { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+  .k-violet { background: #f5f3ff; border-color: #c4b5fd; color: #6d28d9; }
+  .k-orange { background: #fff7ed; border-color: #fdba74; color: #c2410c; }
+  .k-sky    { background: #f0f9ff; border-color: #7dd3fc; color: #0369a1; }
+  .k-indigo { background: #eef2ff; border-color: #a5b4fc; color: #4338ca; }
+  .k-green  { background: #f0fdf4; border-color: #86efac; color: #15803d; }
+  .k-gray   { background: #f8fafc; border-color: #cbd5e1; color: #475569; }
+  .k-pink   { background: #fdf2f8; border-color: #f9a8d4; color: #9d174d; }
+
+  .note { font-size: 11px; color: #94a3b8; margin-top: 11px; font-style: italic; padding-left: 2px; }
+
+  .conn { display: flex; justify-content: center; margin: 2px 0; }
+
+  /* OSD SPLIT */
+  .osd-split { display: flex; justify-content: center; gap: 60px; align-items: flex-start; margin-top: 14px; }
+  .osd-path  { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .path-lbl  { font-size: 11px; font-weight: 800; padding: 3px 12px; border-radius: 4px; letter-spacing: .3px; }
+  .p-yes { background: #dcfce7; color: #15803d; }
+  .p-no  { background: #fee2e2; color: #991b1b; }
+  .cts-flag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fffbeb; border: 1.5px solid #fbbf24;
+    border-radius: 7px; padding: 7px 14px;
+    font-size: 12px; font-weight: 600; color: #92400e;
+    margin-top: 4px; text-align: center;
+  }
+
+  /* SCORING */
+  .sgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; margin-bottom: 11px; }
+  .sc { background: #eef2ff; border: 1.5px solid #a5b4fc; border-radius: 8px; padding: 12px 10px; text-align: center; }
+  .sci { font-size: 18px; margin-bottom: 5px; display: block; }
+  .scn { font-size: 11px; font-weight: 700; color: #4338ca; display: block; margin-bottom: 3px; }
+  .scp { font-size: 13px; font-weight: 800; color: #312e81; display: block; }
+  .scd { font-size: 10px; color: #6b7280; display: block; margin-top: 3px; line-height: 1.3; }
+  .sctotal {
+    background: #312e81; color: #fff; border-radius: 8px;
+    text-align: center; padding: 10px 16px;
+    font-weight: 700; font-size: 13px; letter-spacing: .3px;
+  }
+
+  /* TIERS */
+  .tgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 13px; margin-top: 6px; }
+  .tt { border-radius: 10px; padding: 14px; border: 2px solid; }
+  .tt-r { background: #fff1f2; border-color: #fca5a5; }
+  .tt-a { background: #fffbeb; border-color: #fcd34d; }
+  .tt-g { background: #f0fdf4; border-color: #86efac; }
+  .thd { text-align: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,.08); }
+  .tpill { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase; padding: 3px 11px; border-radius: 999px; margin-bottom: 5px; }
+  .tp-r { background: #fecdd3; color: #9f1239; }
+  .tp-a { background: #fde68a; color: #92400e; }
+  .tp-g { background: #bbf7d0; color: #14532d; }
+  .tsc  { font-size: 11px; color: #6b7280; }
+  .ts { background: #fff; border-radius: 6px; padding: 7px 10px; margin-bottom: 6px; font-size: 12px; font-weight: 500; text-align: center; border: 1px solid rgba(0,0,0,.07); color: #374151; }
+  .ts:last-child { margin-bottom: 0; }
+  .tsep { text-align: center; font-size: 11px; color: #94a3b8; margin: 2px 0; }
+  .tcta { font-weight: 700; border-width: 1.5px; border-style: solid; }
+  .tc-r { background: #fecdd3; border-color: #f43f5e; color: #881337; }
+  .tc-a { background: #fde68a; border-color: #d97706; color: #78350f; }
+  .tc-g { background: #bbf7d0; border-color: #22c55e; color: #14532d; }
+
+  /* FEEDBACK */
+  .fbrow { display: flex; gap: 9px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .fbi { background: #fff; border: 1.5px solid #cbd5e1; border-radius: 7px; padding: 9px 14px; font-size: 12px; font-weight: 500; color: #475569; text-align: center; line-height: 1.4; }
+  .fba { font-size: 15px; color: #94a3b8; font-weight: 700; }
+
+  /* TABLE */
+  .sec-wrap { background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(15,23,42,.07); padding: 18px 20px; margin-top: 20px; }
+  .sec-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 14px; }
+  .ctbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .ctbl th { background: #f8fafc; padding: 9px 13px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #e2e8f0; }
+  .ctbl td { padding: 9px 13px; border-bottom: 1px solid #f1f5f9; vertical-align: top; color: #374151; }
+  .ctbl tr:last-child td { border-bottom: none; }
+  .old { color: #94a3b8; text-decoration: line-through; font-style: italic; font-size: 12px; }
+  .nw  { color: #065f46; font-weight: 600; }
+  .imp { color: #1d4ed8; font-size: 12px; }
+
+  /* LEGEND */
+  .lgd { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  .li  { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #374151; }
+  .foot { text-align: center; margin-top: 24px; font-size: 11px; color: #94a3b8; letter-spacing: .5px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-pill">Pharma Packaging · OSD Pipeline Intelligence</div>
+    <h1>Market Radar — Improved Workflow v2.0</h1>
+    <p>Multi-signal, scored &amp; tiered intelligence pipeline for identifying primary packaging opportunities (blister / OSD) in emerging clinical pipelines — with continuous monitoring and a learning feedback loop.</p>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase c-blue">
+    <div class="ph">
+      <div class="pn" style="background:#dbeafe;color:#1d4ed8;">1</div>
+      <div class="pt" style="color:#1d4ed8;">Signal Ingestion</div>
+      <span class="bdg b-exp">Expanded → 6 streams</span>
+    </div>
+    <div class="nrow">
+      <div class="nd k-blue"><span class="ni">📰</span><span class="nl">Scientific Literature</span><span class="ns">PubMed · bioRxiv · medRxiv</span></div>
+      <div class="nd k-blue"><span class="ni">🧪</span><span class="nl">ClinicalTrials.gov</span><span class="ns">EudraCT · WHO ICTRP · RSS API</span></div>
+      <div class="nd k-blue"><span class="ni">📊</span><span class="nl">SEC / EDGAR</span><span class="ns">10-K · 8-K · S-1 · funding rounds</span></div>
+      <div class="nd k-blue"><span class="ni">📋</span><span class="nl">FDA / EMA Calendar</span><span class="ns">PDUFA dates · NDA/BLA filings</span></div>
+      <div class="nd k-blue"><span class="ni">🔬</span><span class="nl">Patent Databases</span><span class="ns">USPTO · EPO · new OSD formulations</span></div>
+      <div class="nd k-blue"><span class="ni">🎯</span><span class="nl">Conference Abstracts</span><span class="ns">ASCO · ASH · ESMO · ADA · AHA</span></div>
+    </div>
+    <div class="note">↳ Currently: scientific literature only. Expanded to 6 parallel streams — trial registrations and PDUFA dates precede press coverage by weeks to months.</div>
+  </div>
+
+  <div class="conn"><svg width="28" height="32" viewBox="0 0 28 32"><line x1="14" y1="0" x2="14" y2="22" stroke="#cbd5e1" stroke-width="2"/><polygon points="8,20 20,20 14,30" fill="#cbd5e1"/></svg></div>
+
+  <!-- PHASE 2 -->
+  <div class="phase c-violet">
+    <div class="ph">
+      <div class="pn" style="background:#ede9fe;color:#6d28d9;">2</div>
+      <div class="pt" style="color:#6d28d9;">Aggregation &amp; Deduplication</div>
+      <span class="bdg b-new">New</span>
+    </div>
+    <div class="nrow">
+      <div class="nd k-violet"><span class="ni">🔗</span><span class="nl">Entity Normalisation</span><span class="ns">Company + Molecule INN reconciliation</span></div>
+      <div class="nd k-violet"><span class="ni">🔄</span><span class="nl">Cross-Source Dedup</span><span class="ns">One unified record per molecule signal</span></div>
+      <div class="nd k-violet"><span class="ni">⏱️</span><span class="nl">Timestamp &amp; Delta Flag</span><span class="ns">Recency weighting · change detection</span></div>
+      <div class="nd k-violet"><span class="ni">📶</span><span class="nl">Multi-Signal Boost</span><span class="ns">Same molecule in 3+ streams = high-confidence flag</span></div>
+    </div>
+    <div class="note">↳ Prevents the same molecule being processed 6 times. Feeds a single unified record downstream — reduces noise dramatically.</div>
+  </div>
+
+  <div class="conn"><svg width="28" height="32" viewBox="0 0 28 32"><line x1="14" y1="0" x2="14" y2="22" stroke="#cbd5e1" stroke-width="2"/><polygon points="8,20 20,20 14,30" fill="#cbd5e1"/></svg></div>
+
+  <!-- PHASE 3: OSD PRE-FILTER -->
+  <div class="phase c-orange">
+    <div class="ph">
+      <div class="pn" style="background:#ffedd5;color:#c2410c;">3</div>
+      <div class="pt" style="color:#c2410c;">OSD Pre-Filter</div>
+      <span class="bdg b-mov">Moved Earlier — before Exa.AI</span>
+    </div>
+    <div class="nrow" style="justify-content:center;margin-bottom:14px;">
+      <div class="nd k-orange" style="max-width:380px;min-width:280px;">
+        <span class="ni">🔍</span>
+        <span class="nl">Route of Administration Classifier</span>
+        <span class="ns">Oral (OSD) &nbsp;·&nbsp; Injectable &nbsp;·&nbsp; Topical &nbsp;·&nbsp; Inhalation &nbsp;·&nbsp; Transdermal</span>
+      </div>
+    </div>
+    <div class="osd-split">
+      <div class="osd-path">
+        <span class="path-lbl p-yes">✓ IS OSD — Continue</span>
+        <div class="nd k-green" style="min-width:210px;max-width:250px;">
+          <span class="nl">Proceed to Extraction</span>
+          <span class="ns">Tablet · Capsule · ODT · Extended-Release</span>
+        </div>
+        <div class="cts-flag">⚡ Phase 1–2: Flag as CTS packaging opportunity</div>
+      </div>
+      <div class="osd-path">
+        <span class="path-lbl p-no">✗ NOT OSD — Stop Here</span>
+        <div class="nd k-gray" style="min-width:210px;max-width:250px;">
+          <span class="nl">Archive + Flag Route</span>
+          <span class="ns">Injectable · Biologic · IV infusion → skip. Saves Exa.AI credits, no further processing.</span>
+        </div>
+      </div>
+    </div>
+    <div class="note">↳ Key optimisation: running Exa.AI on a monoclonal antibody wastes budget. Gate early. CTS flag surfaces near-term packaging revenue for Phase 1/2 molecules.</div>
+  </div>
+
+  <div class="conn"><svg width="28" height="32" viewBox="0 0 28 32"><line x1="14" y1="0" x2="14" y2="22" stroke="#cbd5e1" stroke-width="2"/><polygon points="8,20 20,20 14,30" fill="#cbd5e1"/></svg></div>
+
+  <!-- PHASE 4 -->
+  <div class="phase c-sky">
+    <div class="ph">
+      <div class="pn" style="background:#e0f2fe;color:#0369a1;">4</div>
+      <div class="pt" style="color:#0369a1;">NLP Entity Extraction + Exa.AI Company Enrichment</div>
+    </div>
+    <div class="nrow">
+      <div class="nd k-sky"><span class="ni">🏢</span><span class="nl">Company</span><span class="ns">Parent · Subsidiary · Spin-out · CRO</span></div>
+      <div class="nd k-sky"><span class="ni">💊</span><span class="nl">Molecule / INN</span><span class="ns">Name · CAS · MOA · dosing</span></div>
+      <div class="nd k-sky"><span class="ni">📈</span><span class="nl">Clinical Stage</span><span class="ns">Phase 1→3 · NDA/BLA · PDUFA</span></div>
+      <div class="nd k-sky"><span class="ni">🎯</span><span class="nl">Indication</span><span class="ns">Oncology · CNS · Metabolic · CV · Rare</span></div>
+      <div class="nd k-sky" style="border-color:#0284c7;background:#e0f7fa;"><span class="ni">🔍</span><span class="nl">Exa.AI Enrichment</span><span class="ns">CDMO setup · Funding · M&amp;A · Procurement contacts</span></div>
+    </div>
+    <div class="note">↳ Exa.AI runs only on confirmed OSD signals — cost-efficient and focused. Explicit CDMO dependency detection: virtual biotechs with no in-house packaging are your primary targets.</div>
+  </div>
+
+  <div class="conn"><svg width="28" height="32" viewBox="0 0 28 32"><line x1="14" y1="0" x2="14" y2="22" stroke="#cbd5e1" stroke-width="2"/><polygon points="8,20 20,20 14,30" fill="#cbd5e1"/></svg></div>
+
+  <!-- PHASE 5: SCORING -->
+  <div class="phase c-indigo">
+    <div class="ph">
+      <div class="pn" style="background:#e0e7ff;color:#4338ca;">5</div>
+      <div class="pt" style="color:#4338ca;">Multi-Dimensional Scoring Engine</div>
+      <span class="bdg b-new">New — replaces binary classifier</span>
+    </div>
+    <div class="sgrid">
+      <div class="sc"><span class="sci">💊</span><span class="scn">OSD Confidence</span><span class="scp">0 – 3</span><span class="scd">Certainty of tablet/capsule form based on MOA + clinical data</span></div>
+      <div class="sc"><span class="sci">⏰</span><span class="scn">Clinical Urgency</span><span class="scp">0 – 3</span><span class="scd">Ph3=3 · Ph2=2 · Ph1=1 · PDUFA within 18 mo = bonus</span></div>
+      <div class="sc"><span class="sci">👥</span><span class="scn">Market Scale</span><span class="scp">0 – 3</span><span class="scd">&gt;500K patients = 3 · 50–500K = 2 · Rare disease = 1</span></div>
+      <div class="sc"><span class="sci">🏗️</span><span class="scn">Commercial Setup</span><span class="scp">0 – 3</span><span class="scd">Virtual biotech = 3 · CDMO-dependent = 2 · Big Pharma in-house = 1</span></div>
+      <div class="sc"><span class="sci">🪟</span><span class="scn">Window of Opportunity</span><span class="scp">0 – 3</span><span class="scd">First-mover, no competition engaged = 3 · Competitors active = 1</span></div>
+    </div>
+    <div class="sctotal">Total Score: 0 – 15 pts &nbsp;&nbsp;|&nbsp;&nbsp; Tier 1 Hot Prospect: 11–15 &nbsp;&nbsp;|&nbsp;&nbsp; Tier 2 Monitor: 6–10 &nbsp;&nbsp;|&nbsp;&nbsp; Tier 3 Watch: 1–5</div>
+    <div class="note">↳ Replaces yes/no with a ranked 0–15 score. BD team works from a prioritised list — not a flat bucket of "relevant" companies.</div>
+  </div>
+
+  <div class="conn"><svg width="28" height="32" viewBox="0 0 28 32"><line x1="14" y1="0" x2="14" y2="22" stroke="#cbd5e1" stroke-width="2"/><polygon points="8,20 20,20 14,30" fill="#cbd5e1"/></svg></div>
+
+  <!-- PHASE 6: TIERING -->
+  <div class="phase c-amber">
+    <div class="ph">
+      <div class="pn" style="background:#fef9c3;color:#b45309;">6</div>
+      <div class="pt" style="color:#92400e;">Priority Tiering &amp; Track Assignment</div>
+      <span class="bdg b-new">New — 3-track response system</span>
+    </div>
+    <div class="tgrid">
+      <div class="tt tt-r">
+        <div class="thd"><div class="tpill tp-r">🔴 Tier 1 — Hot Prospect</div><div class="tsc">Score 11 – 15 / 15</div></div>
+        <div class="ts">🤖 myRA Full Deep Dive</div>
+        <div class="tsep">↓</div>
+        <div class="ts">📁 Taxonomy + Company Profile</div>
+        <div class="tsep">↓</div>
+        <div class="ts">👤 BD Manager Assignment</div>
+        <div class="tsep">↓</div>
+        <div class="ts">✉️ Personalised Outreach</div>
+        <div class="tsep">↓</div>
+        <div class="ts tcta tc-r">📞 Sales Meeting Trigger</div>
+      </div>
+      <div class="tt tt-a">
+        <div class="thd"><div class="tpill tp-a">🟡 Tier 2 — Active Monitor</div><div class="tsc">Score 6 – 10 / 15</div></div>
+        <div class="ts">🤖 myRA Quick Report</div>
+        <div class="tsep">↓</div>
+        <div class="ts">📝 CRM Entry</div>
+        <div class="tsep">↓</div>
+        <div class="ts">📆 Quarterly Re-Score</div>
+        <div class="tsep">↓</div>
+        <div class="ts">🔔 Stage Transition Alert</div>
+        <div class="tsep">↓</div>
+        <div class="ts tcta tc-a">↑ Auto-Upgrade to Tier 1</div>
+      </div>
+      <div class="tt tt-g">
+        <div class="thd"><div class="tpill tp-g">🟢 Tier 3 — Watch List</div><div class="tsc">Score 1 – 5 / 15</div></div>
+        <div class="ts">📦 Archive</div>
+        <div class="tsep">↓</div>
+        <div class="ts">📰 Monthly Digest / Newsletter</div>
+        <div class="tsep">↓</div>
+        <div class="ts">⏳ Annual Re-Evaluate</div>
+        <div class="tsep">↓</div>
+        <div class="ts">📣 Pipeline Stage Watch</div>
+        <div class="tsep">↓</div>
+        <div class="ts tcta tc-g">↑ Re-Enter Pipeline on Trigger</div>
+      </div>
+    </div>
+    <div class="note">↳ Currently: single track for all "relevant" companies. Tiering ensures deep dives are reserved for score 11+ prospects. Tier 2/3 companies stay monitored at low cost.</div>
+  </div>
+
+  <div class="conn"><svg width="28" height="32" viewBox="0 0 28 32"><line x1="14" y1="0" x2="14" y2="22" stroke="#cbd5e1" stroke-width="2"/><polygon points="8,20 20,20 14,30" fill="#cbd5e1"/></svg></div>
+
+  <!-- PHASE 7: MONITORING -->
+  <div class="phase c-pink">
+    <div class="ph">
+      <div class="pn" style="background:#fce7f3;color:#9d174d;">7</div>
+      <div class="pt" style="color:#9d174d;">Live Pipeline Stage Monitoring</div>
+      <span class="bdg b-new">New — turns snapshots into a live watch</span>
+    </div>
+    <div class="nrow">
+      <div class="nd k-pink"><span class="ni">📡</span><span class="nl">Stage Transition Listener</span><span class="ns">Ph1→2 · Ph2→3 · NDA Filing · Approval</span></div>
+      <div class="nd k-pink"><span class="ni">💰</span><span class="nl">Funding Event Detector</span><span class="ns">Series B/C · IPO · Partnership · Acquisition</span></div>
+      <div class="nd k-pink"><span class="ni">📅</span><span class="nl">PDUFA / Launch Watch</span><span class="ns">Approval within 18 months = packaging decisions happening now</span></div>
+      <div class="nd k-pink"><span class="ni">🔁</span><span class="nl">Auto-Rescore + Tier Upgrade</span><span class="ns">Score bump on milestone → BD alert if tier changes</span></div>
+    </div>
+    <div class="note">↳ The critical gap in most market radars. A Phase 2 company archived 6 months ago just filed for Phase 3 — without this layer, you'd miss it until the paper comes out.</div>
+  </div>
+
+  <div class="conn"><svg width="28" height="32" viewBox="0 0 28 32"><line x1="14" y1="0" x2="14" y2="22" stroke="#cbd5e1" stroke-width="2"/><polygon points="8,20 20,20 14,30" fill="#cbd5e1"/></svg></div>
+
+  <!-- PHASE 8: FEEDBACK -->
+  <div class="phase c-slate">
+    <div class="ph">
+      <div class="pn" style="background:#f1f5f9;color:#475569;">8</div>
+      <div class="pt" style="color:#64748b;">Feedback Loop &amp; Continuous Improvement</div>
+      <span class="bdg b-new">New — system learns over time</span>
+    </div>
+    <div class="fbrow">
+      <div class="fbi">📊 Track Outreach<br/>Conversion Rates</div>
+      <div class="fba">→</div>
+      <div class="fbi">🎯 Identify Highest-Signal<br/>Sources &amp; Indicators</div>
+      <div class="fba">→</div>
+      <div class="fbi">🤖 Retrain OSD &amp;<br/>Relevance Classifiers</div>
+      <div class="fba">→</div>
+      <div class="fbi">⚖️ Recalibrate<br/>Score Weights</div>
+      <div class="fba">→</div>
+      <div class="fbi" style="background:#dbeafe;border-color:#3b82f6;color:#1d4ed8;font-weight:700;">↩ Back to<br/>Phase 1</div>
+    </div>
+    <div class="note">↳ The system learns which signals and scoring dimensions actually predict conversion to meetings and RFQs — precision improves with every cycle.</div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="sec-wrap">
+    <div class="sec-title">⚡ Key Improvements vs. Current Approach (v1 → v2)</div>
+    <table class="ctbl">
+      <thead>
+        <tr>
+          <th style="width:16%">Dimension</th>
+          <th style="width:22%">Before (v1)</th>
+          <th style="width:33%">After (v2)</th>
+          <th style="width:29%">Business Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Signal sources</strong></td>
+          <td><span class="old">Articles only</span></td>
+          <td><span class="nw">6 streams: literature + ClinicalTrials + SEC + FDA calendar + patents + conferences</span></td>
+          <td class="imp">Trial registrations precede papers by weeks — catch opportunities before competitors do</td>
+        </tr>
+        <tr>
+          <td><strong>OSD filter position</strong></td>
+          <td><span class="old">After Exa.AI enrichment</span></td>
+          <td><span class="nw">Before Exa.AI — very first gate</span></td>
+          <td class="imp">Eliminates API cost for injectables/biologics; faster pipeline throughput</td>
+        </tr>
+        <tr>
+          <td><strong>CTS opportunity</strong></td>
+          <td><span class="old">Mentioned in deep dive only</span></td>
+          <td><span class="nw">Explicit CTS flag on any Phase 1–2 OSD molecule</span></td>
+          <td class="imp">Near-term packaging revenue surfaces immediately, not buried in a report</td>
+        </tr>
+        <tr>
+          <td><strong>Prioritisation</strong></td>
+          <td><span class="old">Binary yes / no classifier</span></td>
+          <td><span class="nw">0–15 point score across 5 dimensions</span></td>
+          <td class="imp">BD team works from a ranked list — not a flat bucket of "relevant" companies</td>
+        </tr>
+        <tr>
+          <td><strong>Response track</strong></td>
+          <td><span class="old">Single track: myRA + deep dive</span></td>
+          <td><span class="nw">3 tiers: hot prospect / active monitor / watch list</span></td>
+          <td class="imp">Deep dives reserved for score 11+; broader pipeline stays monitored at lower cost</td>
+        </tr>
+        <tr>
+          <td><strong>CDMO detection</strong></td>
+          <td><span class="old">Not scored</span></td>
+          <td><span class="nw">Explicit in Commercial Setup scoring dimension</span></td>
+          <td class="imp">Virtual biotechs (your best targets) correctly rank highest</td>
+        </tr>
+        <tr>
+          <td><strong>Temporal monitoring</strong></td>
+          <td><span class="old">One-time analysis, no re-evaluation</span></td>
+          <td><span class="nw">Continuous stage + funding event monitoring with auto-rescore</span></td>
+          <td class="imp">Never miss a Ph2→3 transition or PDUFA date — the exact moment packaging decisions are made</td>
+        </tr>
+        <tr>
+          <td><strong>Learning</strong></td>
+          <td><span class="old">Static, no improvement over time</span></td>
+          <td><span class="nw">Feedback loop: conversion tracking → classifier retraining</span></td>
+          <td class="imp">Scoring precision improves every cycle based on actual BD outcomes</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="sec-wrap" style="padding:14px 20px; margin-top:12px;">
+    <div class="lgd">
+      <div class="li"><span class="bdg b-new">New</span> New capability added</div>
+      <div class="li"><span class="bdg b-exp">Expanded</span> Existing step broadened</div>
+      <div class="li"><span class="bdg b-mov">Moved Earlier</span> Repositioned for efficiency</div>
+      <div class="li" style="margin-left:auto;font-size:11px;color:#94a3b8;">Applies to: blister packs · OSD primary packaging · CTS &amp; commercial launch</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    myRA AI&reg; &nbsp;·&nbsp; Pharma Packaging Market Intelligence &nbsp;·&nbsp; Workflow v2.0 &nbsp;·&nbsp; Liveo Research &nbsp;·&nbsp; June 2026
+  </div>
+
+</div>
+</body>
+</html>
